@@ -1,3 +1,11 @@
+'''
+A Flask-based web application for detecting emotions in user-provided text using
+IBM Watson's NLP Emotion Prediction API. This app provides a user interface to input text
+and receive an emotional analysis along with the dominant emotion detected. 
+
+Run this module to start the web server locally on port 5000.
+'''
+
 # Import Flask, render_template, request from the flask pramework package :
 from flask import Flask, render_template, request
 # Import the sentiment_analyzer function from the package created:
@@ -8,6 +16,14 @@ app = Flask("Emotion Detector")
 
 @app.route('/emotionDetector')
 def emot_detector():
+    '''
+    Flask route handler that processes emotion detection requests. 
+
+    It extracts the 'textToAnalyze' parameter from the query string, sends it to
+    the emotion_detector function for analysis, and returns a formatted string
+    showing individual emotion scores and the dominant emotion. 
+    '''
+
     text_to_analyzer = request.args.get('textToAnalyze')
     response = emotion_detector(text_to_analyzer)
 
