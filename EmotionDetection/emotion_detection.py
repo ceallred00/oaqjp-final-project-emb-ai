@@ -33,21 +33,33 @@ def emotion_detector(text_to_analyze):
 
     response = requests.post(url, json = myobj, headers = header, timeout = 45)
     formatted_response = json.loads(response.text)
-    anger_score = formatted_response['emotionPredictions'][0]['emotion']['anger']
-    disgust_score = formatted_response['emotionPredictions'][0]['emotion']['disgust']
-    fear_score = formatted_response['emotionPredictions'][0]['emotion']['fear']
-    joy_score = formatted_response['emotionPredictions'][0]['emotion']['joy']
-    sadness_score = formatted_response['emotionPredictions'][0]['emotion']['sadness']
 
-    max_score = max(anger_score, disgust_score, fear_score, joy_score, sadness_score)
+    if response.status_code == 200:
+        anger_score = formatted_response['emotionPredictions'][0]['emotion']['anger']
+        disgust_score = formatted_response['emotionPredictions'][0]['emotion']['disgust']
+        fear_score = formatted_response['emotionPredictions'][0]['emotion']['fear']
+        joy_score = formatted_response['emotionPredictions'][0]['emotion']['joy']
+        sadness_score = formatted_response['emotionPredictions'][0]['emotion']['sadness']
 
-    dict = {'anger': anger_score, 'disgust': disgust_score,
-    'fear': fear_score, 'joy': joy_score, 'sadness': sadness_score}
+        emotion_scores = {'anger': anger_score, 'disgust': disgust_score, 'fear': fear_score, 'joy': joy_score, 'sadness': sadness_score}
+        max_score = max(emotion_scores.values())
+    
+    elif response.status_code == 400:
+        anger_score = None
+        disgust_score = None
+        fear_score = None
+        joy_score = None
+        sadness_score = None
 
-    for item in dict:
-        if dict[item] == max_score:
+        emotion_scores = {'anger': anger_score, 'disgust': disgust_score, 'fear': fear_score, 'joy': joy_score, 'sadness': sadness_score}
+
+    for item in emotion_scores:
+        if emotion_scores[item] is None:
+            dominant_emotion = None
+            break
+        elif emotion_scores[item] == max_score:
             dominant_emotion = item
+    
+    emotion_scores['dominant_emotion'] = dominant_emotion
 
-    dict['dominant_emotion'] = dominant_emotion
-
-    return dict
+    return emotion_scores
